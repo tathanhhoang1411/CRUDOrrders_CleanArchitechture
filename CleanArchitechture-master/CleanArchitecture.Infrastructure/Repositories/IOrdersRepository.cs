@@ -14,5 +14,6 @@ namespace CleanArchitecture.Infrastructure.Repositories
         Task<List<OrdersDto>> GetListOrders(int skip, int take, string data);
         Task<List<OrdersDetailDto>> GetListOrdersDetail(int idOrders,int skip, int take, string data);
         Task<OrdersDto> Get1Orders(int id);
+        Task<OrdersDto> UpdateOrders(Orders order);
     }
 }

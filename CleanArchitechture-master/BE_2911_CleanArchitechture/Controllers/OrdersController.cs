@@ -148,5 +148,36 @@ namespace BE_2911_CleanArchitechture.Controllers
 
             }
         }
+        public class Update
+        {
+            public string CustomerName { get; set; }
+            public int Status { get; set; }
+        }
+        //Cập nhật đơn hàng 
+        [HttpPost("{id}")]
+        [SwaggerOperation(Summary = "Cập nhật đơn hàng theo ID",
+              Description = "")]
+        public async Task<IActionResult> UpdateOrder(int id, [FromBody] Update DataUpdate)
+        {
+            try
+            {
+                this._logger.LogInformation("-------------Log   ||UpdateOrder");
+                var order = await _mediator.Send(new UpdateOrderCommand(id, DataUpdate.CustomerName, DataUpdate.Status));
+                OrdersDto orderDto = _mapper.Map<OrdersDto>(order);
+                return Ok(new ApiResponse<OrdersDto>(orderDto));
+
+            }
+            catch (Exception ex)
+            {
+                // Ghi log lỗi
+                this._logger.LogError(ex.Message, "An error occurred while getting the orders list.");
+
+
+                // Trả về mã lỗi 500 với thông điệp chi tiết
+                var errors = new List<string> { "Internal server error. Please try again later." + ex.Message };
+                return StatusCode(500, ApiResponse<List<string>>.CreateErrorResponse(errors, false));
+            }
+
+        }
     }
 }

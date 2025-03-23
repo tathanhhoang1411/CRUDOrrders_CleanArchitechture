@@ -67,6 +67,26 @@ namespace CleanArchitecture.Infrastructure.Repositories
             return _mapper.Map<OrdersDto>(orders);
 
 
+        }      
+        
+        public async Task<OrdersDto> UpdateOrders(Orders order)
+        {
+
+            var orderInDB = await _userContext.Orders
+               .FindAsync(order.Id);
+            if (orderInDB != null)
+            {
+                // Cập nhật thông tin
+                orderInDB.CustomerName = order.CustomerName;
+                orderInDB.Status = order.Status;
+
+                // Lưu thay đổi vào cơ sở dữ liệu
+                _userContext.SaveChanges();
+            }
+
+            return _mapper.Map<OrdersDto>(orderInDB);
+
+
         }
     }
 }
