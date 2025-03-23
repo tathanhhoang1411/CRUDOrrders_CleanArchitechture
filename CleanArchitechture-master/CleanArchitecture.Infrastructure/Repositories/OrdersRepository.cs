@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace CleanArchitecture.Infrastructure.Repositories
 {
     public class OrdersRepository : IOrdersRepository
@@ -54,6 +55,16 @@ namespace CleanArchitecture.Infrastructure.Repositories
 
             var result = ordersDetail.ToList();
             return _mapper.Map<List<OrdersDetailDto>>(result);
+
+
+        }    
+        public async Task<OrdersDto> Get1Orders(int id)
+        {
+
+            var orders = await _userContext.Orders
+               .Where(p => p.Id == id)
+               .AsNoTracking().FirstOrDefaultAsync();
+            return _mapper.Map<OrdersDto>(orders);
 
 
         }

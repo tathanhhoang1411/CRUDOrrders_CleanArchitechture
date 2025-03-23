@@ -38,11 +38,17 @@ namespace BE_2911_CleanArchitechture.Controllers
             this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
             this._mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
-
+        string description = "Field  <br />" +
+            " skip:Số lượng bỏ qua  <br />" +
+                    " take: Số lượng lấy <br />";
+        //Lấy dannh sách đơn hàng
         [HttpPost("GetListOrders")]
         [AllowAnonymous]
-        [SwaggerOperation(Summary = "Lấy danh sách hóa đơn",
-              Description = "Data: Tên khách hàng( Có thể rỗng)")]
+        [SwaggerOperation(Summary = "Lấy danh sách đơn hàng",
+              Description = "Field  <br />" +
+            " skip:Số lượng bỏ qua  <br />" +
+                    " take: Số lượng lấy <br />" +
+                    " data: Tên khách hàng( Có thể rỗng)")]
 
         public async Task<IActionResult> GetListOrders([FromBody] ApiRequest<string> request)
         {
@@ -63,9 +69,35 @@ namespace BE_2911_CleanArchitechture.Controllers
 
             }
         }
+        //Lấy chi tiết của 1 đơn hàng theo id 
+        [HttpGet("{id}")]
+        [AllowAnonymous]
+        [SwaggerOperation(Summary = "Lấy chi tiết 1 đơn hàng theo id ",
+               Description = "" )]
 
+        public async Task<IActionResult> Get1OrdersByID(int id)
+        {
+            try
+            {
+                this._logger.LogInformation("-------------Log   ||Get1OrdersByID");
+                var list = await _mediator.Send(new Get1OrdersQuery(id));
+                return Ok(new ApiResponse<OrdersDto>(list));
+            }
+            catch (Exception ex)
+            {
+                // Ghi log lỗi
+                this._logger.LogError(ex.Message, "An error occurred while getting the orders list.");
+
+                // Trả về mã lỗi 500 với thông điệp chi tiết
+                var errors = new List<string> { "Internal server error. Please try again later." + ex.Message };
+                return StatusCode(500, ApiResponse<List<string>>.CreateErrorResponse(errors, false));
+
+            }
+        }
+
+        //Tạo đơn hàng mới
         [HttpPost("CreateOrders")]
-        [SwaggerOperation(Summary = "Tạo hóa đơn",
+        [SwaggerOperation(Summary = "Tạo đơn hàng",
               Description = "")]
         public async Task<IActionResult> Create(CreateOrdersCommand command)
         {
@@ -89,9 +121,13 @@ namespace BE_2911_CleanArchitechture.Controllers
             }
 
         }
-        [HttpGet("{id}")]
-        [SwaggerOperation(Summary = "Lấy danh sách chi tiết hóa đơn theo ID hóa đơn ",
-      Description = "Data: Tên sản phẩm (Có thể rỗng)")]
+        //Lấy danh sách sản phẩm của 1 đơn hàng
+        [HttpGet("{id}/order-details")]
+        [SwaggerOperation(Summary = "Lấy danh sách sản phầm của 1 đơn hàng ",
+              Description = "Field  <br />" +
+            " skip:Số lượng bỏ qua  <br />" +
+                    " take: Số lượng lấy <br />" +
+                    " data: Tên sản phẩm( Có thể rỗng)")]
 
         public async Task<IActionResult> GetListOrderDetailByOrderID(int id, [FromBody] ApiRequest<string> request)
         {
@@ -112,6 +148,5 @@ namespace BE_2911_CleanArchitechture.Controllers
 
             }
         }
-
     }
 }
