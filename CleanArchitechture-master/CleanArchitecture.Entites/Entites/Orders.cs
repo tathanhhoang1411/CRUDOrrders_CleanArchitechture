@@ -21,10 +21,26 @@ namespace CleanArchitecture.Entites.Entites
         public decimal TotalAmount { get; set; }
 
         [Required]
+        [Range(0, 2, ErrorMessage = "Status must be 0: Pending, 1: Completed, or 2: Canceled.")]
         public int Status { get; set; } // Có thể thêm validation cho Status nếu cần
 
         [Required]
-        public DateTime CreateAt { get; set; }
+        [Range(0,2, ErrorMessage = "Status must be 0: Pending, 1: Completed, or 2: Canceled.")]
+        private DateTime _createAt;
+
+        [Required]
+        public DateTime CreateAt
+        {
+            get => _createAt;
+            set
+            {
+                if (value < new DateTime(1, 1, 1) || value > DateTime.Now)
+                {
+                    throw new ArgumentException("CreateAt must be between 01/01/0001 and today.");
+                }
+                _createAt = value;
+            }
+        }
 
         [Required]
         public DateTime UpdatedAt { get; set; }

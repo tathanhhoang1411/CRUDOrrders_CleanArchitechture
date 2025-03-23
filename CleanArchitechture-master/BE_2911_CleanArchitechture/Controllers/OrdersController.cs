@@ -42,9 +42,9 @@ namespace BE_2911_CleanArchitechture.Controllers
         [HttpPost("GetListOrders")]
         [AllowAnonymous]
         [SwaggerOperation(Summary = "Lấy danh sách hóa đơn",
-              Description = "")]
+              Description = "Data: Tên khách hàng( Có thể rỗng)")]
 
-        public async Task<IActionResult> GetListProduct([FromBody] ApiRequest<string> request)
+        public async Task<IActionResult> GetListOrders([FromBody] ApiRequest<string> request)
         {
             try
             {
@@ -54,9 +54,11 @@ namespace BE_2911_CleanArchitechture.Controllers
             }
             catch (Exception ex)
             {
+                // Ghi log lỗi
+                this._logger.LogError(ex.Message, "An error occurred while getting the orders list."); 
 
                 // Trả về mã lỗi 500 với thông điệp chi tiết
-                var errors = new List<string> { "Internal server error. Please try again later." };
+                var errors = new List<string> { "Internal server error. Please try again later." + ex.Message };
                 return StatusCode(500, ApiResponse<List<string>>.CreateErrorResponse(errors, false));
 
             }
@@ -78,32 +80,34 @@ namespace BE_2911_CleanArchitechture.Controllers
             catch (Exception ex)
             {
                 // Ghi log lỗi
-                this._logger.LogError(ex, "An error occurred while getting the orders list.");
+                this._logger.LogError(ex.Message, "An error occurred while getting the orders list.");
 
 
                 // Trả về mã lỗi 500 với thông điệp chi tiết
-                var errors = new List<string> { "Internal server error. Please try again later." };
+                var errors = new List<string> { "Internal server error. Please try again later."+ ex.Message };
                 return StatusCode(500, ApiResponse<List<string>>.CreateErrorResponse(errors, false));
             }
 
         }
         [HttpGet("{id}")]
         [SwaggerOperation(Summary = "Lấy danh sách chi tiết hóa đơn theo ID hóa đơn ",
-      Description = "Chi tiết hóa đơn: Data: Tên sản phẩm, có thể rỗng")]
+      Description = "Data: Tên sản phẩm (Có thể rỗng)")]
 
         public async Task<IActionResult> GetListOrderDetailByOrderID(int id, [FromBody] ApiRequest<string> request)
         {
             try
             {
-                this._logger.LogInformation("-------------Log   ||GetListOrdersDetail");
+                this._logger.LogInformation("-------------Log   ||GetListOrderDetailByOrderID");
                 var list = await _mediator.Send(new GetAllOrdersDetailQuery(id, request.Skip, request.Take, request.Data));
                 return Ok(new ApiResponse<List<OrdersDetailDto>>(list));
             }
             catch (Exception ex)
             {
+                // Ghi log lỗi
+                this._logger.LogError(ex.Message, "An error occurred while getting the orders list.");
 
                 // Trả về mã lỗi 500 với thông điệp chi tiết
-                var errors = new List<string> { "Internal server error. Please try again later." };
+                var errors = new List<string> { "Internal server error. Please try again later." + ex.Message };
                 return StatusCode(500, ApiResponse<List<string>>.CreateErrorResponse(errors, false));
 
             }
