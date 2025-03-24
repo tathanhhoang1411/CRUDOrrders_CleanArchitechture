@@ -32,7 +32,7 @@ namespace CleanArchitecture.Infrastructure.Repositories
         public async Task<int> DeleteOrderDetail(int id)
         {
 
-            var orderDetailInDB = _userContext.Orders
+            var orderDetailInDB = _userContext.OrderDetails
                 .Where(p => p.Id == id).AsNoTracking().ToList();
             if (orderDetailInDB.Count > 0)
             {
