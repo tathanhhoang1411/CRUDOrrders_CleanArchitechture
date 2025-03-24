@@ -39,18 +39,24 @@ namespace BE_2911_CleanArchitechture.Controllers
             this._mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        
-        [HttpGet("{id}")]
-        [SwaggerOperation(Summary = "Lấy danh sách chi tiết hóa đơn theo ID hóa đơn ",
-      Description = "Data: Tên sản phẩm (Có thể rỗng)")]
+        //Xóa sản phẩm trong đơn hàng
+        [HttpDelete("{id}")]
+        [SwaggerOperation(Summary = "Xóa sanr phẩm của 1 đơn hàng ",
+              Description = "Field  <br />" +
+            " id: mã sản phẩm trong đơn hàng")]
 
-        public async Task<IActionResult> GetListOrderDetailByOrderID(int id, [FromBody] ApiRequest<string> request)
+        public async Task<IActionResult> DeleteOrderDetailById(int id)
         {
             try
             {
-                this._logger.LogInformation("-------------Log   ||GetListOrderDetailByOrderID");
-                var list = await _mediator.Send(new GetAllOrdersDetailQuery(id, request.Skip, request.Take, request.Data));
-                return Ok(new ApiResponse<List<OrdersDetailDto>>(list));
+                this._logger.LogInformation("-------------Log   ||DeleteOrderDetailById");
+                int order = await _mediator.Send(new DeleteOrderDetailByIdCommand(id));
+                if (order == 0)
+                {
+
+                    return StatusCode(404, new ApiResponse<string>("Not Found:" + id));
+                }
+                return Ok(new ApiResponse<int>(id));
             }
             catch (Exception ex)
             {

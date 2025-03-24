@@ -3,6 +3,7 @@ using CleanArchitecture.Entites.Dtos;
 using CleanArchitecture.Entites.Entites;
 using CleanArchitecture.Entites.Interfaces;
 using CleanArchitecture.Infrastructure.DBContext;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -79,12 +80,37 @@ namespace CleanArchitecture.Infrastructure.Repositories
                 // Cập nhật thông tin
                 orderInDB.CustomerName = order.CustomerName;
                 orderInDB.Status = order.Status;
+                orderInDB.UpdatedAt = order.UpdatedAt;
 
                 // Lưu thay đổi vào cơ sở dữ liệu
                 _userContext.SaveChanges();
             }
 
             return _mapper.Map<OrdersDto>(orderInDB);
+
+
+        }
+        public async Task<int> DeleteOrders(int id)
+        {
+
+            var orderInDB =  _userContext.Orders
+                .Where(p => p.Id == id).AsNoTracking().ToList();
+            if (orderInDB.Count >0)
+            {
+                // Gọi stored procedure
+                var parameter = new SqlParameter("@OrderId", id);
+                var result =  _userContext.Database.ExecuteSqlRaw("EXEC DeleteOrder @OrderId", parameter);
+                if (result > 0)
+                {
+                    return id;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+
+            return 0;
 
 
         }

@@ -1,4 +1,5 @@
-﻿using CleanArchitecture.Entites.Dtos;
+﻿using CleanArchitecture.Application.IRepository;
+using CleanArchitecture.Entites.Dtos;
 using CleanArchitecture.Entites.Entites;
 using CleanArchitecture.Infrastructure.Repositories;
 using MediatR;
@@ -28,14 +29,14 @@ namespace CleanArchitecture.Application.Query
     public class GetAllOrdersQueryHandler : IRequestHandler<GetAllOrdersQuery, List<OrdersDto>>
         {
 
-            private readonly IOrdersRepository _ordersRepository;
-            public GetAllOrdersQueryHandler(IOrdersRepository ordersRepository)
+            private readonly IOrdersServices _ordersService;
+            public GetAllOrdersQueryHandler(IOrdersServices ordersService)
             {
-                _ordersRepository = ordersRepository;
+            _ordersService = ordersService;
             }
             public async Task<List<OrdersDto>> Handle(GetAllOrdersQuery query, CancellationToken cancellationToken)
             {
-                var ordersList = await _ordersRepository.GetListOrders(query.Skip, query.Take, query.Data);
+                var ordersList = await _ordersService.GetListOrders(query.Skip, query.Take, query.Data);
             return ordersList ?? new List<OrdersDto>(); // Trả về danh sách rỗng nếu không có sản phẩm
             }
         }

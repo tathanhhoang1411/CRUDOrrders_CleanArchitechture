@@ -4,6 +4,7 @@ using CleanArchitecture.Application.IRepository;
 using CleanArchitecture.Application.Query;
 using CleanArchitecture.Application.Query.Utilities;
 using CleanArchitecture.Entites.Dtos;
+using CleanArchitecture.Entites.Entites;
 using CleanArchitecture.Entites.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -179,5 +180,64 @@ namespace BE_2911_CleanArchitechture.Controllers
             }
 
         }
+
+        //thêm sản phẩm vào đơn hàng
+        [HttpPost("{id}/order-details")]
+        [SwaggerOperation(Summary = "Thêm sản phẩm vào đơn hàng theo ID",
+              Description = "")]
+        public async Task<IActionResult> AddProductInOrder(int id, [FromBody] OrderDetails request )
+        {
+            try
+            {
+                this._logger.LogInformation("-------------Log   ||AddProductInOrder");
+                var orderDetail = await _mediator.Send(new AddProductInOrderCommand(id, request));
+                OrdersDetailDto orderDetailDto = _mapper.Map<OrdersDetailDto>(orderDetail);
+                return Ok(new ApiResponse<OrdersDetailDto>(orderDetailDto));
+
+            }
+            catch (Exception ex)
+            {
+                // Ghi log lỗi
+                this._logger.LogError(ex.Message, "An error occurred while getting the orders list.");
+
+
+                // Trả về mã lỗi 500 với thông điệp chi tiết
+                var errors = new List<string> { "Internal server error. Please try again later." + ex.Message };
+                return StatusCode(500, ApiResponse<List<string>>.CreateErrorResponse(errors, false));
+            }
+
+        }
+
+        //Xóa đơn hàng
+        [HttpDelete("{id}")]
+        [SwaggerOperation(Summary = "xoa 1 đơn hàng ",
+              Description = "Field  <br />" +
+            " id: mã đơn hàng")]
+
+        public async Task<IActionResult> DeleteOrderById(int id)
+        {
+            try
+            {
+                this._logger.LogInformation("-------------Log   ||DeleteOrderById");
+                int order = await _mediator.Send(new DeleteOrderByIdCommand(id));
+                if (order == 0)
+                {
+
+                return StatusCode(404, new ApiResponse<string>("Not Found:"+id));
+                }
+                return Ok(new ApiResponse<int>(id));
+            }
+            catch (Exception ex)
+            {
+                // Ghi log lỗi
+                this._logger.LogError(ex.Message, "An error occurred while getting the orders list.");
+
+                // Trả về mã lỗi 500 với thông điệp chi tiết
+                var errors = new List<string> { "Internal server error. Please try again later." + ex.Message };
+                return StatusCode(500, ApiResponse<List<string>>.CreateErrorResponse(errors, false));
+
+            }
+        }
+
     }
 }

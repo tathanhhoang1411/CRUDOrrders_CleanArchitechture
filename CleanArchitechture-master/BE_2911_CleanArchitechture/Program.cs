@@ -32,6 +32,8 @@ builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServe
 builder.Services.AddTransient<ApplicationContext, ApplicationContext>();
 builder.Services.AddTransient<IOrdersRepository, OrdersRepository>();
 builder.Services.AddTransient<IOrdersServices, OrdersServices>();
+builder.Services.AddTransient<IOrdersDeTailRepository, OrdersDetailRepository>();
+builder.Services.AddTransient<IOrdersDetailServices, OrdersDetailService>();
 builder.Services.AddApplicationMediaR();
 builder.Services.AddMvc();
 var automapper = new MapperConfiguration(item => item.AddProfile(new MappingProfile()));

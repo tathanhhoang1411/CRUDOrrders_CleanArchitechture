@@ -1,4 +1,5 @@
-﻿using CleanArchitecture.Entites.Entites;
+﻿using CleanArchitecture.Application.IRepository;
+using CleanArchitecture.Entites.Entites;
 using CleanArchitecture.Infrastructure.Repositories;
 using MediatR;
 using System;
@@ -24,10 +25,10 @@ namespace CleanArchitecture.Application.Commands
         }
         public class UpdateOrderCommandHandler : IRequestHandler<UpdateOrderCommand, Orders>
         {
-            private readonly IOrdersRepository _ordersRepository;
-            public UpdateOrderCommandHandler(IOrdersRepository ordersRepository)
+            private readonly IOrdersServices _ordersService;
+            public UpdateOrderCommandHandler(IOrdersServices ordersService)
             {
-                _ordersRepository = ordersRepository;
+                _ordersService = ordersService;
             }
             public async Task<Orders> Handle(UpdateOrderCommand command, CancellationToken cancellationToken)
             {
@@ -37,7 +38,7 @@ namespace CleanArchitecture.Application.Commands
                 order.Status = command.Status;
                 order.Id = command.Id;
                 order.UpdatedAt = now;
-                await _ordersRepository.UpdateOrders(order);
+                await _ordersService.UpdateOrders(order);
                 return order;
             }
         }
